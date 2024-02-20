@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { List, Card, Typography, Button, Modal, Form, Input } from 'antd';
+import SeeMore from './SeeMore';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -12,6 +13,7 @@ const PostDetail = () => {
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [updateItem, setUpdateItem] = useState(null);
   const [updateForm] = Form.useForm();
+  
 
   useEffect(() => {
     fetchData();
@@ -70,75 +72,62 @@ const PostDetail = () => {
         console.error('Update form validation failed:', errorInfo);
       });
   };
-
-  const renderText = (text) => {
-    const words = text.split(' ');
-    if (words.length > 15) {
-      return (
-        <>
-          {words.slice(0, 15).join(' ')}
-          <span style={{ display: 'none' }}>{words.slice(15).join(' ')}</span>
-          <Button type="link" onClick={() => handleSeeMore(words)}>See More</Button>
-        </>
-      );
-    }
-    return text;
-  };
-
-  const handleSeeMore = (words) => {
-    const hiddenText = words.slice(15).join(' ');
-    Modal.info({
-      title: 'More Text',
-      content: <Text>{hiddenText}</Text>,
-    });
+  
+  const handleSeeMoreClick = (postId) => {
+    
+    window.location.href = `/posts/${postId}`;
   };
 
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
-      <h1 style={{ width: '100%' }}>Post</h1>
-      {data.map(item => (
-        <Card key={item.id} style={{ width: '300px', padding: '20px', flex: '1 1 300px' }}>
-          <img src={item.images} alt="Image" style={{ width: '100%' }} />
-          <Title level={4}>{item.title}</Title>
-          <Text>{renderText(item.text)}</Text>
-          <div style={{ marginTop: '10px' }}>
-            <Button type="primary" onClick={() => handleUpdate(item)}>Update</Button>
-            <Button type="danger" onClick={() => handleDelete(item.id)}>Delete</Button>
-          </div>
-        </Card>
-      ))}
-      <Modal
-        title="Confirm Delete"
-        open={deleteModalOpen}
-        onOk={confirmDelete}
-        onCancel={() => setDeleteModalOpen(false)}
-      >
-        <p>Are you sure you want to delete this item?</p>
-      </Modal>
-      <Modal
-        title="Update Post"
-        open={updateModalOpen}
-        onCancel={() => setUpdateModalOpen(false)}
-        onOk={handleUpdateSubmit}
-      >
-        <Form form={updateForm}>
-          <Form.Item
-            label="Title"
-            name="title"
-            rules={[{ required: true, message: 'Please enter the title' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Text"
-            name="text"
-            rules={[{ required: true, message: 'Please enter the text' }]}
-          >
-            <TextArea />
-          </Form.Item>
-        </Form>
-      </Modal>
-    </div>
+    <>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <h1 style={{ paddingLeft: '600px' }}>Post</h1>
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
+        {data.map(item => (
+          <Card key={item.id} style={{ width: '300px', padding: '20px', flex: '1 1 300px' }}>
+            <img src={item.images} alt="Image" style={{ width: '100%' }} />
+            <Title level={4}>{item.title}</Title>
+            <SeeMore text={item.text} postId={item.id} onSeeMoreClick={() => handleSeeMoreClick(item.id)} />
+            <div style={{ marginTop: '10px' }}>
+              <Button type="primary" onClick={() => handleUpdate(item)}>Update</Button>
+              <Button type="danger" onClick={() => handleDelete(item.id)}>Delete</Button>
+            </div>
+          </Card>
+        ))}
+        <Modal
+          title="Confirm Delete"
+          open={deleteModalOpen}
+          onOk={confirmDelete}
+          onCancel={() => setDeleteModalOpen(false)}
+        >
+          <p>Are you sure you want to delete this item?</p>
+        </Modal>
+        <Modal
+          title="Update Post"
+          open={updateModalOpen}
+          onCancel={() => setUpdateModalOpen(false)}
+          onOk={handleUpdateSubmit}
+        >
+          <Form form={updateForm}>
+            <Form.Item
+              label="Title"
+              name="title"
+              rules={[{ required: true, message: 'Please enter the title' }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label="Text"
+              name="text"
+              rules={[{ required: true, message: 'Please enter the text' }]}
+            >
+              <TextArea />
+            </Form.Item>
+          </Form>
+        </Modal>
+      </div>
+    </>
   );
 };
 

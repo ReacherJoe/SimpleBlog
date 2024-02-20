@@ -40,7 +40,7 @@ func main() {
 	e.POST("/upload", Upload)
 
 	e.GET("/data", RealAll)
-	e.POST("/api/data", InsertOne)
+	e.GET("/data/:id", ReadOne)
 	e.DELETE("/api/data/:id", DeleteOne)
 	e.PUT("/api/data/:id", UpdateOne)
 
@@ -59,27 +59,17 @@ func RealAll(c echo.Context) error {
 	return c.JSON(http.StatusOK, blogs)
 
 }
-func InsertOne(c echo.Context) error {
-    // Declare a variable of type Blog to store the request data
-    var blog Blog
-    
-    // Bind the request body to the Blog struct
-    if err := c.Bind(&blog); err != nil {
-        // If there's an error binding, return a bad request response
-        return c.String(http.StatusBadRequest, "bad request")
+func ReadOne ( c echo.Context) error {
+    id := c.Param("id")
+
+    var blogs Blog
+
+    err = db.Where("id = ?",id).Find(&blogs).Error
+    if err != nil {
+        return nil
     }
     
-    // Print the title for debugging purposes
-    fmt.Println(blog.Title)
-    
-    // Assuming db is your database connection, create a new record
-    if err := db.Create(&blog).Error; err != nil {
-        // If there's an error creating the record, return an internal server error
-        return c.String(http.StatusInternalServerError, "failed to create record")
-    }
-    
-    // If everything went well, return a JSON response with status 201 (Created)
-    return c.JSON(http.StatusCreated, blog)
+    return c.JSON(http.StatusOK, blogs)
 }
 func DeleteOne(c echo.Context) error {
 	id := c.Param("id")

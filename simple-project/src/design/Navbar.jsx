@@ -8,13 +8,19 @@ const { Header } = Layout;
 const Navbar = () => {
   return (
     <>
-      <Header style={{ display: 'flex', alignItems: 'center' }}>
+      <Header   style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 1,
+         padding: 10,
+          display: 'flex',
+          alignItems: 'center',
+        }}>
         <div style={{ flex: 1 }}>
           <span style={{ color: 'white', fontSize: '1.5rem', fontWeight: 'bold' }}>
             Simple Blog
           </span>
         </div>
-        {/* Use Link instead of anchor tag */}
         <Button type="primary">
           <Link to="/post">Create Post</Link>
         </Button>
